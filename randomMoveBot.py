@@ -1,5 +1,6 @@
 import chess
 import random
+from collections import defaultdict
 
 # Tree data structure for holding all possible moves at certain depth (done)
 class Tree:
@@ -30,9 +31,8 @@ def findEval(board):
     eval = whiteEval - blackEval
     return eval
 
-# Create the move tree at depth 1 given board
-# To do: make this with depth 2
-def createMoveTreeD1(board):
+# Create the move tree at depth 2 given board
+def createMoveTree(board):
     root = Tree(board, [], None)
     legalMoves = list(board.legal_moves)
     for i in range(len(legalMoves)):
@@ -41,6 +41,15 @@ def createMoveTreeD1(board):
         boardChildMoveList.append(str(legalMoves[i]))
         boardChild.push_san(str(legalMoves[i]))
         root.children.append(Tree(boardChild, boardChildMoveList, root))
+    for i in range(len(root.children)):
+        legalMovesC = list(root.children[i].board.legal_moves)
+        currChild = root.children[i]
+        for j in range(len(legalMovesC)):
+            boardChild = currChild.board.copy()
+            boardChildMoveList = currChild.moveList[:]
+            boardChildMoveList.append(str(legalMovesC[j]))
+            boardChild.push_san(str(legalMovesC[j]))
+            currChild.children.append(Tree(boardChild, boardChildMoveList, currChild))
     return root
 
 # Find the best move given tree
@@ -74,6 +83,6 @@ while True:
     board.push_san(userMove)
     print(board)
     print("\nNext Turn\n")
-    boardTree = createMoveTreeD1(board)
+    boardTree = createMoveTree(board)
     compMove = findBest(boardTree)
     board.push_san(compMove)
