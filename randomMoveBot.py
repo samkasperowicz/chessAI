@@ -70,9 +70,8 @@ def findBest(boardTree):
     return bestMove
 
 # Code to be run (main)
-# To do: End of game detection
 board = chess.Board()
-while True:
+while not board.is_game_over():
     print(board)
     userMove = input("\nEnter a move: ")
     print("\n")
@@ -81,8 +80,17 @@ while True:
         userMove = input("Invalid, enter a new move: ")
         userMoveCheck = chess.Move.from_uci(userMove)
     board.push_san(userMove)
+    if board.is_game_over():
+        break
     print(board)
     print("\nNext Turn\n")
     boardTree = createMoveTree(board)
     compMove = findBest(boardTree)
     board.push_san(compMove)
+print(board)
+if board.result() == "1-0":
+    print("White wins")
+elif board.result() == "0-1":
+    print("Black wins")
+else:
+    print("Draw")
